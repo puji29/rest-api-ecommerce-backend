@@ -1,6 +1,11 @@
 const path = require("path");
 const fs = require("fs");
-const { addSlider,getSliders } = require("../repository/Slider_repository.js");
+const {
+  addSlider,
+  getSliders,
+  getSliderById,
+  deleteSliderById,
+} = require("../repository/Slider_repository.js");
 
 const createSlider = async (req, newDataSlider) => {
   try {
@@ -11,7 +16,7 @@ const createSlider = async (req, newDataSlider) => {
     const file = req.files.file;
     const fileSize = file.data.length;
     const ext = path.extname(file.name);
-    const fileName = file.md5 +ext;
+    const fileName = file.md5 + ext;
     const url = `${req.protocol}://${req.get("host")}/image/${fileName}`;
     const allowedType = [".png", ".jpg", ".jpeg"];
 
@@ -39,13 +44,41 @@ const createSlider = async (req, newDataSlider) => {
   }
 };
 
-const findAllSliders = async() => {
-    const sliders = await getSliders()
+const findAllSliders = async () => {
+  const sliders = await getSliders();
 
-    return sliders
-}
+  return sliders;
+};
+
+const findSliderById = async (id) => {
+  try {
+    const slider = await getSliderById(id);
+    return slider;
+  } catch (error) {
+    console.error("Error: ", error);
+    throw error;
+  }
+};
+
+const removeSlider = async (id) => {
+  const result = await deleteSliderById(id);
+  if (result.rowCount === 0) {
+    throw new Error("Slider not found");
+  }
+  const imagePath = path.join(
+    __dirname,
+    "..",
+    "public",
+    "image",
+    result.rows[0].image
+  );
+  await fs.promises.unlink(imagePath);
+  return result.rows[0];
+};
 
 module.exports = {
-    createSlider,
-    findAllSliders
-}
+  createSlider,
+  findAllSliders,
+  findSliderById,
+  removeSlider,
+};

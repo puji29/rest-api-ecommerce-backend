@@ -1,9 +1,11 @@
 const express = require('express')
-const { createSliderHandler, findAllHandler } = require("../controller/Slide_controller.js")
+const { createSliderHandler, findAllHandler,findByIdHandler,deleteSliderHandler } = require("../controller/Slide_controller.js")
 
 const router = express.Router()
 
 router.post('/sliders', createSliderHandler)
 router.get('/sliders', findAllHandler)
+router.get('/sliders/:id',findByIdHandler)
+router.delete('/sliders/:id',deleteSliderHandler)
 
 module.exports = router
