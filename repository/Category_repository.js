@@ -27,7 +27,13 @@ const getCategory = async () => {
     return categoryByid;
   };
 
+  const updateCategoryById = async(id,updateData)=>{
+    const {name, image, url} = updateData
   
+    const result = await pool.query('UPDATE categories SET name=$1, image =$2, url = $3 WHERE id=$4 RETURNING *', [name, image,url,id])
+  
+    return result
+  }
   
   const deleteCategoryById = async(id)=>{
       const result = await pool.query("DELETE FROM categories WHERE id=$1 RETURNING image",[id])
@@ -40,5 +46,6 @@ module.exports = {
     addCategory,
     getCategory,
     getCategoryById,
+    updateCategoryById,
     deleteCategoryById
 }

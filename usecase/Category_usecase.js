@@ -1,6 +1,6 @@
 const path = require("path");
 const fs = require("fs");
-const {addCategory} = require("../repository/Category_repository.js")
+const {addCategory, getCategory,getCategoryById,updateCategoryById,deleteCategoryById} = require("../repository/Category_repository.js")
 
 const createCategory = async (req, newDataCategory) => {
     try {
@@ -39,6 +39,70 @@ const createCategory = async (req, newDataCategory) => {
     }
   };
 
+  const findAllCategory = async () => {
+    const result = await getCategory();
+  
+    return result;
+  };
+  
+  const findcategoryById = async (id) => {
+    try {
+      const result = await getCategoryById(id);
+      return result;
+    } catch (error) {
+      console.error("Error: ", error);
+      throw error;
+    }
+  };
+  
+  const updateCategory = async (id, updateData) => {
+    const checkCategory = await getCategoryById(id);
+  
+    if (checkCategory.rowCount === 0) {
+      throw new Error("Category not found");
+    }
+  
+    const oldImage = checkCategory.rows[0].image;
+    if (oldImage && oldImage !== updateData.image) {
+      const oldImagePath = path.join(
+        __dirname,
+        "..",
+        "public",
+        "image",
+        oldImage
+      );
+      try {
+        await fs.access(oldImagePath)
+        await fs.promises.unlink(oldImagePath);
+      } catch (error) {
+        console.warn(`File not found : ${oldImagePath},skiping deletion`)
+      }
+    }
+    const result = await updateCategoryById(id, updateData);
+    return result.rows[0];
+  };
+  
+  const removeCategory = async (id) => {
+    const result = await deleteCategoryById(id);
+    if (result.rowCount === 0) {
+      throw new Error("Slider not found");
+    }
+    const imagePath = path.join(
+      __dirname,
+      "..",
+      "public",
+      "image",
+      result.rows[0].image
+    );
+    
+    await fs.promises.unlink(imagePath);
+    return result.rows[0];
+  };
+
   module.exports = {
-    createCategory
+    createCategory,
+    findAllCategory,
+    findcategoryById,
+    updateCategory,
+    removeCategory
   }

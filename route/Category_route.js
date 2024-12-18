@@ -1,11 +1,12 @@
 const express = require('express')
-const {createHandler} = require("../controller/Category_controller.js")
+const {createHandler,findAllHandler,findByIdHandler,updateHandler,deleteHandler} = require("../controller/Category_controller.js")
 
 const router = express.Router()
 
 router.post('/categories', createHandler)
-// router.get('/sliders', findAllHandler)
-// router.get('/sliders/:id',findByIdHandler)
-// router.delete('/sliders/:id',deleteSliderHandler)
+router.get('/categories', findAllHandler)
+router.get('/categories/:id',findByIdHandler)
+router.put('/categories/:id',updateHandler)
+router.delete('/categories/:id',deleteHandler)
 
 module.exports = router
