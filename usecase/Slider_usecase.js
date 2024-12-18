@@ -4,6 +4,7 @@ const {
   addSlider,
   getSliders,
   getSliderById,
+  updateSliderById,
   deleteSliderById,
 } = require("../repository/Slider_repository.js");
 
@@ -60,6 +61,33 @@ const findSliderById = async (id) => {
   }
 };
 
+const updateSlider = async (id, updateData) => {
+  const checkSlider = await getSliderById(id);
+
+  if (checkSlider.rowCount === 0) {
+    throw new Error("Slider not found");
+  }
+
+  const oldImage = checkSlider.rows[0].image;
+  if (oldImage && oldImage !== updateData.image) {
+    const oldImagePath = path.join(
+      __dirname,
+      "..",
+      "public",
+      "image",
+      oldImage
+    );
+    try {
+      await fs.access(oldImagePath)
+      await fs.promises.unlink(oldImagePath);
+    } catch (error) {
+      console.warn(`File not found : ${oldImagePath},skiping deletion`)
+    }
+  }
+  const result = await updateSliderById(id, updateData);
+  return result.rows[0];
+};
+
 const removeSlider = async (id) => {
   const result = await deleteSliderById(id);
   if (result.rowCount === 0) {
@@ -72,6 +100,7 @@ const removeSlider = async (id) => {
     "image",
     result.rows[0].image
   );
+  
   await fs.promises.unlink(imagePath);
   return result.rows[0];
 };
@@ -80,5 +109,6 @@ module.exports = {
   createSlider,
   findAllSliders,
   findSliderById,
+  updateSlider,
   removeSlider,
 };

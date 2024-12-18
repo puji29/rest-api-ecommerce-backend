@@ -2,6 +2,7 @@ const express = require('express');
 const fileUpload = require('express-fileupload');
 require("dotenv").config()
 const SliderRoute = require("./route/Slider_route")
+const CategoryRoute = require("./route/Category_route")
 const port = process.env.API_PORT || 4000;
 
 app = express()
@@ -10,6 +11,7 @@ app.use(fileUpload())
 app.use(express.static("public"))
 
 app.use(SliderRoute)
+app.use(CategoryRoute)
 
 app.get('/', (req,res) => {
     res.send('Hello word')

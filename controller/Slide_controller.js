@@ -1,8 +1,10 @@
+const path = require("path");
 const {
   createSlider,
   findAllSliders,
   findSliderById,
-  removeSlider
+  updateSlider,
+  removeSlider,
 } = require("../usecase/Slider_usecase.js");
 
 const createSliderHandler = async (req, res) => {
@@ -50,20 +52,68 @@ const findByIdHandler = async (req, res) => {
   }
 };
 
-const deleteSliderHandler = async (req,res) =>{
+const updateHandler = async (req, res) => {
   try {
-    const {id } = req.params
-    await removeSlider(id)
-    res.status(200).json({message: 'slider deleted succesfully'})
+    const { id } = req.params;
+    const updateData = {
+      name: req.body.name,
+      image: req.body.file,
+      url: req.body.url,
+      tipe: req.body.tipe,
+    };
+
+    if (req.files && req.files.file) {
+      const file = req.files.file;
+      const fileSize = file.data.length;
+      const ext = path.extname(file.name);
+      const fileName = file.md5 + ext;
+      const url = `${req.protocol}://${req.get("host")}/image/${fileName}`;
+      const allowedType = [".png", ".jpg", ".jpeg"];
+
+      if (!allowedType.includes(ext.toLowerCase())) {
+        throw new Error("Invalid image type");
+      }
+
+      if (fileSize > 5000000) {
+        throw new Error("Image must be less than 5MB");
+      }
+      const savePath = `./public/image/${fileName}`;
+      await file.mv(savePath);
+      updateData.image = fileName;
+      updateData.url = url;
+    }
+
+    const result = await updateSlider(id, updateData)
+
+    res.status(200).json({
+      message: 'Slider update successfully',
+      data: result.rows
+    })
+
   } catch (error) {
-    res.status(500).json({message: error.message})
+    res.status(500).json({
+      message: error.message
+    })
     console.log(error)
+
   }
-}
+};
+
+const deleteSliderHandler = async (req, res) => {
+  try {
+    const { id } = req.params;
+    await removeSlider(id);
+    res.status(200).json({ message: "slider deleted succesfully" });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+    console.log(error);
+  }
+};
 
 module.exports = {
   createSliderHandler,
   findAllHandler,
   findByIdHandler,
-  deleteSliderHandler
+  updateHandler,
+  deleteSliderHandler,
 };

@@ -27,6 +27,14 @@ const getSliderById = async (id) => {
   return sliderByid;
 };
 
+const updateSliderById = async(id,updateData)=>{
+  const {name, image, url, tipe} = updateData
+
+  const result = await pool.query('UPDATE sliders SET name=$1, image =$2, url = $3, tipe=$4 WHERE id=$5 RETURNING *', [name, image,url, tipe,id])
+
+  return result
+}
+
 const deleteSliderById = async(id)=>{
     const result = await pool.query("DELETE FROM sliders WHERE id=$1 RETURNING image",[id])
 
@@ -37,5 +45,6 @@ module.exports = {
   addSlider,
   getSliders,
   getSliderById,
+  updateSliderById,
   deleteSliderById
 };
