@@ -1,19 +1,24 @@
 const path = require("path")
-const {createCategory,findAllCategory,findCategoryById,updateCategory,removeCategory} = require("../usecase/Category_usecase.js");
+const {createProduct,findAllProducts,findProductById,updateProduct,removeProduct} = require("../usecase/Product_usecase.js");
 
 const createHandler = async (req, res) => {
     try {
-      const newDataCategory = {
+      const newDataProduct = {
         name: req.body.name,
+        deskripsi: req.body.dekripsi,
+        price: req.body.price,
+        sellingPrice: req.body.sellingPrice,
+        stock: req.body.stock,
         image: req.body.file,
         url: req.body.url,
+        categoryId: req.body.categoryId,
       };
   
-      const result = await createCategory(req, newDataCategory);
+      const result = await createProduct(req, newDataProduct);
   
       res.status(201).json({
-        message: "add new Category succesfully",
-        data: result.rows,
+        message: "add new Product succesfully",
+        data: result,
       });
     } catch (error) {
       res.status(500).json({ message: error.message });
@@ -22,10 +27,10 @@ const createHandler = async (req, res) => {
 
   const findAllHandler = async (req, res) => {
     try {
-      const result = await findAllCategory();
+      const result = await findAllProducts();
       res.status(200).json(result.rows);
     } catch (error) {
-      res.status(500).json({ message: "failed get data Category" });
+      res.status(500).json({ message: "failed get data Product" });
       console.log(error);
     }
   };
@@ -33,7 +38,7 @@ const createHandler = async (req, res) => {
   const findByIdHandler = async (req, res) => {
     try {
       const id = req.params.id;
-      const result = await findCategoryById(id);
+      const result = await findProductById(id);
   
       res.status(200).json(result.rows);
     } catch (error) {
@@ -50,9 +55,13 @@ const createHandler = async (req, res) => {
       const { id } = req.params;
       const updateData = {
         name: req.body.name,
+        deskripsi: req.body.deskripsi,
+        price: req.body.price,
+        sellingPrice: req.body.sellingPrice,
+        stock: req.body.stock,
         image: req.body.file,
         url: req.body.url,
-        
+        categoryId: req.body.categoryId,
       };
   
       if (req.files && req.files.file) {
@@ -76,11 +85,12 @@ const createHandler = async (req, res) => {
         updateData.url = url;
       }
   
-      const result = await updateCategory(id, updateData)
+      const result = await updateProduct(id, updateData)
+     
   
       res.status(200).json({
-        message: 'Category update successfully',
-        data: result.rows
+        message: 'Product update successfully',
+        data: result
       })
   
     } catch (error) {
@@ -95,8 +105,8 @@ const createHandler = async (req, res) => {
   const deleteHandler = async (req, res) => {
     try {
       const { id } = req.params;
-      await removeCategory(id);
-      res.status(200).json({ message: "Category deleted succesfully" });
+      await removeProduct(id);
+      res.status(200).json({ message: "Product deleted succesfully" });
     } catch (error) {
       res.status(500).json({ message: error.message });
       console.log(error);
