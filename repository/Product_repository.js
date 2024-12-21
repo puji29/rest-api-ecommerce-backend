@@ -36,7 +36,7 @@ const getProduct = async () => {
   }
   
   const deleteProductById = async(id)=>{
-      const result = await pool.query("DELETE FROM categories WHERE id=$1 RETURNING image",[id])
+      const result = await pool.query("DELETE FROM products WHERE id=$1 RETURNING image",[id])
   
       return result
   }
