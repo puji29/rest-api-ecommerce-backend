@@ -4,6 +4,7 @@ require("dotenv").config()
 const SliderRoute = require("./route/Slider_route")
 const CategoryRoute = require("./route/Category_route")
 const ProductRoute = require("./route/Product_route")
+const UserRoute = require("./route/User_route")
 const port = process.env.API_PORT || 4000;
 
 app = express()
@@ -14,6 +15,7 @@ app.use(express.static("public"))
 app.use(SliderRoute)
 app.use(CategoryRoute)
 app.use(ProductRoute)
+app.use(UserRoute)
 
 app.get('/', (req,res) => {
     res.send('Hello word')
