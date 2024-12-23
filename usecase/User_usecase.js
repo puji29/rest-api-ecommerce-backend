@@ -77,6 +77,17 @@ const updateUser = async (id, updateData) => {
     throw new Error("User not found");
   }
 
+  if(updateData.password){
+    const saltRounds = 10
+    const hashedPassword = await bcrypt.hash(updateData.password,saltRounds)
+    updateData.password = hashedPassword
+  }
+
+  const checkRole = checkUser.rows[0]
+  if(checkRole.role !== 'admin' && updateData.role && checkRole.role !== updateData.role){
+    throw new Error("cannot change if non admin")
+  }
+
   const oldImage = checkUser.rows[0].image;
   if (oldImage && oldImage !== updateData.image) {
     const oldImagePath = path.join(
@@ -93,6 +104,9 @@ const updateUser = async (id, updateData) => {
       console.warn(`File not found : ${oldImagePath},skiping deletion`)
     }
   }
+  const now = new Date()
+  const date = now.toLocaleDateString()
+  updateData.updatedAt = date
   const result = await updateUserById(id, updateData);
   return result.rows[0];
 };

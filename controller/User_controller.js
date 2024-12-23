@@ -60,9 +60,12 @@ const updateHandler = async (req, res) => {
     const { id } = req.params;
     const updateData = {
       name: req.body.name,
+      email: req.body.email,
+      alamat: req.body.alamat,
+      password: req.body.password,
+      role: req.body.role,
       image: req.body.file,
-      url: req.body.url,
-      tipe: req.body.tipe,
+      url: req.body.url
     };
 
     if (req.files && req.files.file) {

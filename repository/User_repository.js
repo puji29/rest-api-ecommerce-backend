@@ -28,9 +28,9 @@ const getUserById = async (id) => {
 };
 
 const updateUserById = async(id,updateData)=>{
-  const {name, image, url, tipe} = updateData
+  const {name,email,alamat,password,role, image, url,updatedAt} = updateData
 
-  const result = await pool.query('UPDATE Users SET name=$1, image =$2, url = $3, tipe=$4 WHERE id=$5 RETURNING *', [name, image,url, tipe,id])
+  const result = await pool.query('UPDATE Users SET name=$1,email=$2,alamat=$3, password=$4,role=$5,image =$6, url = $7, updated_at=$8 WHERE id=$9 RETURNING *', [name,email,alamat,password,role, image, url,updatedAt,id])
 
   return result
 }
